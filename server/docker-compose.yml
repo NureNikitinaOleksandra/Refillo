@@ -1,0 +1,17 @@
+version: "3.8"
+services:
+  postgres:
+    image: postgres:15
+    container_name: refillo-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: refillo_admin
+      POSTGRES_PASSWORD: refillo_password
+      POSTGRES_DB: refillo_db
+    ports:
+      - "5434:5432"
+    volumes:
+      - refillo_pgdata:/var/lib/postgresql/data
+
+volumes:
+  refillo_pgdata:

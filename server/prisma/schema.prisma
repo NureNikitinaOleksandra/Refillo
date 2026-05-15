@@ -1,0 +1,205 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ================= ENUMS (Переліки) =================
+
+enum Role {
+  CUSTOMER
+  EMPLOYEE
+  COURIER
+  ADMIN
+}
+
+enum OrderStatus {
+  CREATED
+  IN_PROCESS
+  COLLECTED
+  ACCEPTED_BY_COURIER
+  EN_ROUTE
+  DELIVERED
+}
+
+enum PaymentStatus {
+  UNPAID
+  PENDING
+  PAID
+}
+
+enum PaymentMethod {
+  CARD_ONLINE
+  CASH_ON_DELIVERY
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAUSED
+  CANCELLED
+}
+
+enum NotificationType {
+  ORDER_UPDATE
+  SUBSCRIPTION_GENERATED
+  PAYMENT_ALERT
+  PRODUCT_ISSUE
+  NEW_TASK
+  SYSTEM_ERROR
+}
+
+// ================= СУТНОСТІ (Таблиці) =================
+
+model Store {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+
+  // Зв'язки
+  users         User[]
+  categories    Category[]
+  products      Product[]
+  orders        Order[]
+  subscriptions Subscription[]
+}
+
+model User {
+  id                     String   @id @default(uuid())
+  storeId                String
+  name                   String
+  email                  String   @unique
+  passwordHash           String
+  phone                  String?
+  defaultDeliveryAddress String?
+  role                   Role     @default(CUSTOMER)
+  createdAt              DateTime @default(now())
+
+  // Зв'язки
+  store         Store          @relation(fields: [storeId], references: [id])
+  orders        Order[]
+  subscriptions Subscription[]
+  notifications Notification[]
+}
+
+model Category {
+  id          String  @id @default(uuid())
+  storeId     String
+  name        String
+  description String?
+
+  // Зв'язки
+  store    Store     @relation(fields: [storeId], references: [id])
+  products Product[]
+}
+
+model Product {
+  id            String  @id @default(uuid())
+  storeId       String
+  categoryId    String
+  name          String
+  description   String?
+  currentPrice  Float
+  stockQuantity Int     @default(0)
+  imageUrl      String? // Посилання на зображення (напр., http://localhost:3000/images/item.jpg)
+
+  // Зв'язки
+  store              Store               @relation(fields: [storeId], references: [id])
+  category           Category            @relation(fields: [categoryId], references: [id])
+  orderItems         OrderItem[]
+  subscriptionItems  SubscriptionItem[]
+  subscriptionAddOns SubscriptionAddOn[]
+}
+
+model Order {
+  id                      String        @id @default(uuid())
+  orderNumber             String        @unique
+  storeId                 String
+  userId                  String
+  orderStatus             OrderStatus   @default(CREATED)
+  paymentStatus           PaymentStatus @default(UNPAID)
+  paymentMethod           PaymentMethod
+  deliveryAddress         String
+  deliveryTime            DateTime? // Точна дата і час, на яку запланована доставка
+  totalPrice              Float
+  isSubscriptionGenerated Boolean       @default(false)
+  createdAt               DateTime      @default(now())
+
+  // Зв'язки
+  store      Store       @relation(fields: [storeId], references: [id])
+  user       User        @relation(fields: [userId], references: [id])
+  orderItems OrderItem[]
+}
+
+model OrderItem {
+  id              String @id @default(uuid())
+  orderId         String
+  productId       String
+  quantity        Int
+  priceAtPurchase Float
+
+  // Зв'язки
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+}
+
+model Subscription {
+  id                     String             @id @default(uuid())
+  storeId                String
+  userId                 String
+  status                 SubscriptionStatus @default(ACTIVE)
+  frequencyDays          Int
+  nextExecutionDate      DateTime
+  paymentMethod          PaymentMethod
+  deliveryAddress        String
+  deliveryTimePreference String? // Наприклад "10:00" (бажаний час доби)
+  createdAt              DateTime           @default(now())
+
+  // Зв'язки
+  store             Store               @relation(fields: [storeId], references: [id])
+  user              User                @relation(fields: [userId], references: [id])
+  subscriptionItems SubscriptionItem[]
+  addOns            SubscriptionAddOn[]
+}
+
+model SubscriptionItem {
+  id             String @id @default(uuid())
+  subscriptionId String
+  productId      String
+  quantity       Int
+
+  // Зв'язки
+  subscription Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  product      Product      @relation(fields: [productId], references: [id])
+}
+
+model Notification {
+  id          String           @id @default(uuid())
+  userId      String
+  type        NotificationType
+  messageText String
+  isRead      Boolean          @default(false)
+  createdAt   DateTime         @default(now())
+
+  // Зв'язки
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model SubscriptionAddOn {
+  id             String @id @default(uuid())
+  subscriptionId String
+  productId      String
+  quantity       Int
+
+  // Зв'язки
+  subscription Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  product      Product      @relation(fields: [productId], references: [id])
+}
