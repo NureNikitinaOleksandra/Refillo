@@ -33,7 +33,7 @@ export const products = [
     desc: "Крупнолистовий зелений чай з жасмином.",
     price: 320,
     stock: 50,
-    img: "green-tea.jpg",
+    img: "green-tea.png",
   },
   {
     category: "Кава та Чай",
