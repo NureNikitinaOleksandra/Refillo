@@ -72,6 +72,13 @@ export const getMySubscriptions = async (req, res, next) => {
             },
           },
         },
+        addOns: {
+          include: {
+            product: {
+              select: { name: true, currentPrice: true, imageUrl: true },
+            },
+          },
+        },
       },
       orderBy: { createdAt: "desc" },
     });
@@ -90,6 +97,24 @@ export const updateStatus = async (req, res, next) => {
     const updated = await prisma.subscription.update({
       where: { id, userId: req.user.userId },
       data: { status },
+    });
+
+    // Словник для красивих сповіщень
+    const statusMap = {
+      ACTIVE: "Активна",
+      PAUSED: "Зупинена",
+      CANCELLED: "Скасована",
+    };
+    const translatedStatus = statusMap[status] || status;
+
+    const subNumber = `SUB-${id.slice(0, 6).toUpperCase()}`;
+
+    await prisma.notification.create({
+      data: {
+        userId: req.user.userId,
+        type: "SUBSCRIPTION_UPDATE",
+        messageText: `Статус вашої підписки ${subNumber} змінено на: ${translatedStatus}.`,
+      },
     });
 
     res.json({
@@ -126,6 +151,16 @@ export const updatePermanentItems = async (req, res, next) => {
       });
     });
 
+    const subNumber = `SUB-${id.slice(0, 6).toUpperCase()}`;
+
+    await prisma.notification.create({
+      data: {
+        userId: req.user.userId,
+        type: "SUBSCRIPTION_UPDATE",
+        messageText: `Постійний склад вашої підписки ${subNumber} успішно оновлено.`,
+      },
+    });
+
     res.json({
       message: "Склад підписки змінено назавжди",
       subscription: updated,
@@ -147,6 +182,16 @@ export const addOneTimeItems = async (req, res, next) => {
         productId: item.productId,
         quantity: item.quantity,
       })),
+    });
+
+    const subNumber = `SUB-${id.slice(0, 6).toUpperCase()}`;
+
+    await prisma.notification.create({
+      data: {
+        userId: req.user.userId,
+        type: "SUBSCRIPTION_UPDATE",
+        messageText: `Одноразові доповнення успішно додані до вашої наступної доставки за підпискою ${subNumber}.`,
+      },
     });
 
     res.json({ message: "Товари успішно додані до наступної доставки" });

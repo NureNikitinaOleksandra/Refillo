@@ -1,11 +1,15 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
+import { NotificationProvider } from "./contexts/NotificationContext";
 import AuthPage from "./pages/AuthPage";
 import SidebarLayout from "./components/layout/SidebarLayout";
 import HomePage from "./pages/HomePage";
 import CatalogPage from "./pages/CatalogPage";
 import CheckoutPage from "./pages/CheckoutPage";
+import ProfilePage from "./pages/ProfilePage";
+import NotificationsPage from "./pages/NotificationsPage";
+import OrdersSubscriptionsPage from "./pages/OrdersSubscriptionsPage";
 
 // Компонент для захисту сторінок (якщо не залогінений - викидає на авторизацію)
 const ProtectedRoute = ({ children }) => {
@@ -40,18 +44,9 @@ function AppRoutes() {
         <Route index element={<HomePage />} />
         <Route path="catalog" element={<CatalogPage />} />
         <Route path="checkout" element={<CheckoutPage />} />
-        <Route
-          path="orders"
-          element={<PlaceholderPage title="Мої замовлення (в розробці)" />}
-        />
-        <Route
-          path="notifications"
-          element={<PlaceholderPage title="Сповіщення (в розробці)" />}
-        />
-        <Route
-          path="profile"
-          element={<PlaceholderPage title="Профіль (в розробці)" />}
-        />
+        <Route path="orders" element={<OrdersSubscriptionsPage />} />
+        <Route path="notifications" element={<NotificationsPage />} />
+        <Route path="profile" element={<ProfilePage />} />
       </Route>
     </Routes>
   );
@@ -61,9 +56,11 @@ function App() {
   return (
     <AuthProvider>
       <CartProvider>
-        <BrowserRouter>
-          <AppRoutes />
-        </BrowserRouter>
+        <NotificationProvider>
+          <BrowserRouter>
+            <AppRoutes />
+          </BrowserRouter>
+        </NotificationProvider>
       </CartProvider>
     </AuthProvider>
   );

@@ -69,7 +69,14 @@ export const getMyOrders = async (req, res, next) => {
       include: {
         orderItems: {
           include: {
-            product: { select: { name: true, imageUrl: true } },
+            product: {
+              select: {
+                id: true,
+                name: true,
+                currentPrice: true,
+                imageUrl: true,
+              },
+            },
           },
         },
       },
@@ -104,6 +111,16 @@ export const payOrder = async (req, res, next) => {
 
     // 2. Симуляція оплати (секретний код 0000)
     if (cardNumber && cardNumber.endsWith("0000")) {
+      // Створюємо сповіщення про помилку
+      await prisma.notification.create({
+        data: {
+          userId,
+          type: "PAYMENT_ALERT",
+          messageText:
+            "Помилка оплати: Недостатньо коштів на картці. Ваше замовлення збережено зі статусом 'Неоплачено'. Спробуйте оплатити його пізніше в історії замовлень.",
+        },
+      });
+
       return res
         .status(400)
         .json({ error: "Помилка оплати: Недостатньо коштів на картці" });
@@ -113,6 +130,14 @@ export const payOrder = async (req, res, next) => {
     const updatedOrder = await prisma.order.update({
       where: { id },
       data: { paymentStatus: "PAID" },
+    });
+
+    await prisma.notification.create({
+      data: {
+        userId,
+        type: "PAYMENT_ALERT",
+        messageText: `Оплату замовлення успішно отримано. Дякуємо!`,
+      },
     });
 
     res.json({

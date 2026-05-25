@@ -50,11 +50,12 @@ enum SubscriptionStatus {
 
 enum NotificationType {
   ORDER_UPDATE
-  SUBSCRIPTION_GENERATED
+  SUBSCRIPTION_UPDATE
   PAYMENT_ALERT
   PRODUCT_ISSUE
   NEW_TASK
-  SYSTEM_ERROR
+  ACCOUNT_UPDATE
+  STATUS_CHANGE
 }
 
 // ================= СУТНОСТІ (Таблиці) =================

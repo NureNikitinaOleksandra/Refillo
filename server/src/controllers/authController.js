@@ -37,6 +37,15 @@ export const register = async (req, res, next) => {
       },
     });
 
+    await prisma.notification.create({
+      data: {
+        userId: newUser.id,
+        type: "ACCOUNT_UPDATE",
+        messageText:
+          "Вітаємо в Refillo! Ваш обліковий запис успішно створено. Зробіть своє перше замовлення вже зараз!",
+      },
+    });
+
     res.status(201).json({ message: "Реєстрація успішна", userId: newUser.id });
   } catch (error) {
     next(error); // Передаємо помилку в глобальний errorHandler

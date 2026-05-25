@@ -3,6 +3,7 @@ export default function ProductCard({
   onClick,
   isSelected = false,
   orderMode = "ONE_TIME",
+  actions,
 }) {
   // Визначаємо колір обводки залежно від режиму, якщо картка "обрана"
   const getBorderColor = () => {
@@ -51,6 +52,16 @@ export default function ProductCard({
             {product.stockQuantity > 0 ? `В наявності` : "Немає"}
           </span>
         </div>
+
+        {/* Якщо є дії (кнопки), малюємо їх тут */}
+        {actions && (
+          <div
+            className="mt-3 pt-3 border-t border-gray-100"
+            onClick={(e) => e.stopPropagation()} // Зупиняємо клік, щоб не спрацював onClick всієї картки
+          >
+            {actions}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,15 +1,50 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
+import { api } from "../services/api";
 import {
   ShoppingCartIcon,
   ArrowPathRoundedSquareIcon,
   ViewColumnsIcon,
 } from "@heroicons/react/24/outline";
 import { useCart } from "../contexts/CartContext";
+import ActivityCard from "../components/history/ActivityCard";
 
 export default function HomePage() {
   const { user } = useAuth();
   const { setOrderMode } = useCart();
+  const navigate = useNavigate();
+
+  const [recentActivities, setRecentActivities] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Завантажуємо останні замовлення та підписки
+  useEffect(() => {
+    const fetchRecentData = async () => {
+      try {
+        const [ordersRes, subsRes] = await Promise.all([
+          api.get("/orders/my-orders"),
+          api.get("/subscriptions/my-subscriptions"),
+        ]);
+
+        const orders = ordersRes.data.map((o) => ({ ...o, _type: "ORDER" }));
+        const subs = subsRes.data.map((s) => ({ ...s, _type: "SUBSCRIPTION" }));
+
+        // Зливаємо, сортуємо за датою і беремо лише перші 3 найновіші елементи
+        const merged = [...orders, ...subs]
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          .slice(0, 3);
+
+        setRecentActivities(merged);
+      } catch (error) {
+        console.error("Помилка завантаження дашборду:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchRecentData();
+  }, []);
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -90,12 +125,32 @@ export default function HomePage() {
           </Link>
         </div>
 
-        {/* Заглушка для карток (Поки ми не підключили API) */}
-        {/* <div className="bg-white p-10 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-gray-400">
-          <QueueListIcon className="w-16 h-16 mb-4 opacity-50 text-gray-300" />
-          <p>Тут будуть відображатися ваші останні активності.</p>
-          <p className="text-sm">Зробіть своє перше замовлення!</p>
-        </div> */}
+        {isLoading ? (
+          <div className="text-center py-6 text-gray-400 font-medium">
+            Завантаження дашборду...
+          </div>
+        ) : recentActivities.length === 0 ? (
+          <div className="text-center py-8 text-gray-400">
+            <p className="font-semibold">
+              У вас ще немає створених замовлень або підписок.
+            </p>
+            <p className="text-sm mt-1">
+              Зробіть свій перший вибір за допомогою кнопок вище!
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {recentActivities.map((item) => (
+              <ActivityCard
+                key={item.id}
+                item={item}
+                type={item._type}
+                isSelected={false}
+                onClick={() => navigate("/orders")} // Перенаправляємо в історію, де відкриються деталі
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -17,6 +17,7 @@ import CartItemList from "../components/checkout/CartItemList";
 import PaymentMethodSelector from "../components/checkout/PaymentMethodSelector";
 import PaymentModal from "../components/checkout/PaymentModal";
 import ThemeButton from "../components/ui/ThemeButton";
+import CancelButton from "../components/ui/CancelButton";
 
 import {
   SparklesIcon,
@@ -306,12 +307,9 @@ export default function CheckoutPage() {
               </ThemeButton>
 
               {/* Кнопка скасування */}
-              <button
-                onClick={handleCancel}
-                className="w-full py-3 rounded-xl font-semibold text-gray-500 bg-gray-200 hover:bg-gray-300 transition-colors"
-              >
+              <CancelButton onClick={handleCancel}>
                 Скасувати та вийти
-              </button>
+              </CancelButton>
             </div>
           </div>
         </div>

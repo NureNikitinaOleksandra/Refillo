@@ -103,7 +103,7 @@ export default function CatalogPage() {
       {/* Сітка товарів */}
       {filteredProducts.length === 0 ? (
         <div className="text-center py-20 text-gray-500">
-          <p className="text-xl font-semibold mb-2">Товарів не знайдено 😔</p>
+          <p className="text-xl font-semibold mb-2">Товарів не знайдено</p>
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">

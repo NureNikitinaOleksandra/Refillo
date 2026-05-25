@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { useCart } from "../../contexts/CartContext";
+import { useNotifications } from "../../contexts/NotificationContext";
 import {
   HomeIcon,
   ShoppingBagIcon,
@@ -21,6 +22,7 @@ export default function Sidebar() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { setOrderMode } = useCart();
+  const { unreadCount } = useNotifications();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -86,6 +88,13 @@ export default function Sidebar() {
                   className={`w-6 h-6 ${isActive ? "text-brand-yellow" : "opacity-70"}`}
                 />
                 <span>{item.name}</span>
+
+                {/* ГРАДІЄНТНЕ КОЛО ДЛЯ СПОВІЩЕНЬ */}
+                {item.name === "Мої сповіщення" && unreadCount > 0 && (
+                  <span className="bg-gradient-to-r from-brand-yellow to-brand-orange text-white text-xs font-bold px-2.5 py-0.5 rounded-full shadow-md animate-fade-in">
+                    {unreadCount}
+                  </span>
+                )}
               </Link>
             );
           })}

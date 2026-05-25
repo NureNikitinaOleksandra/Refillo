@@ -6,25 +6,25 @@ export function getNotificationsData(userId) {
   return [
     {
       userId,
-      type: "SYSTEM_ERROR",
+      type: "ACCOUNT_UPDATE",
       messageText: "Вітаємо в Refillo! Ваш обліковий запис успішно створено.",
       isRead: true,
     },
     {
       userId,
-      type: "ORDER_UPDATE",
+      type: "STATUS_CHANGE",
       messageText: `Ваше замовлення №${dateString}-001 прийнято в обробку.`,
       isRead: true,
     },
     {
       userId,
-      type: "ORDER_UPDATE",
+      type: "STATUS_CHANGE",
       messageText: `Замовлення №${dateString}-002 успішно доставлено. Дякуємо, що обрали нас!`,
       isRead: true,
     },
     {
       userId,
-      type: "SUBSCRIPTION_GENERATED",
+      type: "SUBSCRIPTION_UPDATE",
       messageText: `Автоматичне замовлення №${dateString}-003 за вашою підпискою успішно створено.`,
       isRead: false,
     },
