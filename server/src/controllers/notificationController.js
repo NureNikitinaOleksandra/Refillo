@@ -1,6 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "../prisma.js";
 
 // Отримання всіх повідомлень клієнта (від найновіших до найстаріших)
 export const getMyNotifications = async (req, res, next) => {

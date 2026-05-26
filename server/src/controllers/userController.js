@@ -1,6 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "../prisma.js";
 
 // Отримання профілю поточного користувача
 export const getProfile = async (req, res, next) => {

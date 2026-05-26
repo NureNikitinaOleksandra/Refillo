@@ -12,7 +12,7 @@ export default function Avatar({ name, role, size = "large" }) {
   let bgClass = "bg-brand-dark"; // За замовчуванням (або для адмінів)
   if (role === "CUSTOMER")
     bgClass = "bg-gradient-to-r from-brand-yellow to-brand-orange";
-  if (role === "STAFF") bgClass = "bg-brand-yellow";
+  if (role === "EMPLOYEE") bgClass = "bg-brand-yellow";
   if (role === "COURIER") bgClass = "bg-brand-orange";
 
   return (

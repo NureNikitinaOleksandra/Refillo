@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/queueFragment">
+
+    <fragment
+        android:id="@+id/queueFragment"
+        android:name="com.example.refillostaff.presentation.queue.QueueFragment"
+        android:label="Черга" />
+
+    <fragment
+        android:id="@+id/notificationsFragment"
+        android:name="com.example.refillostaff.presentation.notifications.NotificationsFragment"
+        android:label="Сповіщення" />
+
+    <fragment
+        android:id="@+id/historyFragment"
+        android:name="com.example.refillostaff.presentation.history.HistoryFragment"
+        android:label="Історія" />
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.refillostaff.presentation.profile.ProfileFragment"
+        android:label="Профіль" />
+
+    <fragment
+        android:id="@+id/orderDetailFragment"
+        android:name="com.example.refillostaff.presentation.queue.OrderDetailFragment"
+        android:label="Деталі замовлення" />
+</navigation>

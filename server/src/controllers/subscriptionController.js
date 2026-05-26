@@ -1,6 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "../prisma.js";
 
 // Створення нової підписки
 export const createSubscription = async (req, res, next) => {

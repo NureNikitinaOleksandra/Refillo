@@ -46,6 +46,25 @@ export const createOrder = async (req, res, next) => {
       });
     });
 
+    // Знаходимо всіх працівників
+    const staffMembers = await prisma.user.findMany({
+      where: { role: "EMPLOYEE" },
+    });
+
+    // Створюємо масив сповіщень для кожного працівника
+    const staffNotifications = staffMembers.map((staff) => ({
+      userId: staff.id,
+      type: "NEW_TASK",
+      messageText: `Нове замовлення №${newOrder.orderNumber} надійшло і очікує на збірку.`,
+    }));
+
+    // Зберігаємо всі сповіщення одним запитом
+    if (staffNotifications.length > 0) {
+      await prisma.notification.createMany({
+        data: staffNotifications,
+      });
+    }
+
     res.status(201).json({ message: paymentMessage, order: result });
   } catch (error) {
     // Якщо сервіс викинув помилку (наприклад, недостатньо товару), ми її ловимо тут

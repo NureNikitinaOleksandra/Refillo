@@ -9,6 +9,7 @@ import userRoutes from "./routes/userRoutes.js";
 import subscriptionRoutes from "./routes/subscriptionRoutes.js";
 import { initCronJobs } from "./services/cronService.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
+import staffRoutes from "./routes/staffRoutes.js";
 
 // Ініціалізація змінних середовища
 dotenv.config();
@@ -47,6 +48,7 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/subscriptions", subscriptionRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/staff", staffRoutes);
 
 // Запускаємо фонові задачі
 initCronJobs();
